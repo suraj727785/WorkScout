@@ -1,0 +1,429 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="WorkScoutModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Applicant">
+          <Key>
+            <PropertyRef Name="ApplicantEmail" />
+          </Key>
+          <Property Name="ApplicantEmail" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CollegeName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="CourseCompletion" Type="date" Nullable="false" />
+          <Property Name="ResumeUrl" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="JobApplicant">
+          <Key>
+            <PropertyRef Name="JobId" />
+            <PropertyRef Name="applicantEmail" />
+          </Key>
+          <Property Name="JobId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="applicantEmail" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CStatus" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="JobPost">
+          <Key>
+            <PropertyRef Name="JobId" />
+          </Key>
+          <Property Name="JobId" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="RecruiterEmail" Type="nvarchar" MaxLength="50" />
+          <Property Name="JobTitle" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="JobLocation" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="JobSalary" Type="float" />
+          <Property Name="JobDescription" Type="nvarchar" MaxLength="500" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Recruiter">
+          <Key>
+            <PropertyRef Name="RecruiterEmail" />
+          </Key>
+          <Property Name="RecruiterEmail" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="CompanyName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="CompanyWebsiteUrl" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Designation" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="UserDetail">
+          <Key>
+            <PropertyRef Name="Email" />
+          </Key>
+          <Property Name="UserId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Contact" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="Email" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Role" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Password" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__Applicant__Appli__276EDEB3">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="1" />
+          <End Role="Applicant" Type="Self.Applicant" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="Applicant">
+              <PropertyRef Name="ApplicantEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__JobApplic__appli__30F848ED">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="1" />
+          <End Role="JobApplicant" Type="Self.JobApplicant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="JobApplicant">
+              <PropertyRef Name="applicantEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__JobApplic__JobId__300424B4">
+          <End Role="JobPost" Type="Self.JobPost" Multiplicity="1" />
+          <End Role="JobApplicant" Type="Self.JobApplicant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobPost">
+              <PropertyRef Name="JobId" />
+            </Principal>
+            <Dependent Role="JobApplicant">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__JobPost__Recruit__2D27B809">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="0..1" />
+          <End Role="JobPost" Type="Self.JobPost" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="JobPost">
+              <PropertyRef Name="RecruiterEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Recruiter__Recru__2A4B4B5E">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="1" />
+          <End Role="Recruiter" Type="Self.Recruiter" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="Recruiter">
+              <PropertyRef Name="RecruiterEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="usp_applicantDetailsByEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="email" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="usp_jobsAppliedByEmail" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="email" Type="nvarchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="WorkScoutModelStoreContainer">
+          <EntitySet Name="Applicant" EntityType="Self.Applicant" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JobApplicant" EntityType="Self.JobApplicant" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="JobPost" EntityType="Self.JobPost" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Recruiter" EntityType="Self.Recruiter" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UserDetail" EntityType="Self.UserDetail" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK__Applicant__Appli__276EDEB3" Association="Self.FK__Applicant__Appli__276EDEB3">
+            <End Role="UserDetail" EntitySet="UserDetail" />
+            <End Role="Applicant" EntitySet="Applicant" />
+          </AssociationSet>
+          <AssociationSet Name="FK__JobApplic__appli__30F848ED" Association="Self.FK__JobApplic__appli__30F848ED">
+            <End Role="UserDetail" EntitySet="UserDetail" />
+            <End Role="JobApplicant" EntitySet="JobApplicant" />
+          </AssociationSet>
+          <AssociationSet Name="FK__JobApplic__JobId__300424B4" Association="Self.FK__JobApplic__JobId__300424B4">
+            <End Role="JobPost" EntitySet="JobPost" />
+            <End Role="JobApplicant" EntitySet="JobApplicant" />
+          </AssociationSet>
+          <AssociationSet Name="FK__JobPost__Recruit__2D27B809" Association="Self.FK__JobPost__Recruit__2D27B809">
+            <End Role="UserDetail" EntitySet="UserDetail" />
+            <End Role="JobPost" EntitySet="JobPost" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Recruiter__Recru__2A4B4B5E" Association="Self.FK__Recruiter__Recru__2A4B4B5E">
+            <End Role="UserDetail" EntitySet="UserDetail" />
+            <End Role="Recruiter" EntitySet="Recruiter" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="WorkScoutModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Applicant">
+          <Key>
+            <PropertyRef Name="ApplicantEmail" />
+          </Key>
+          <Property Name="ApplicantEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CollegeName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CourseCompletion" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="ResumeUrl" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="UserDetail" Relationship="Self.FK__Applicant__Appli__276EDEB3" FromRole="Applicant" ToRole="UserDetail" />
+        </EntityType>
+        <EntityType Name="JobApplicant">
+          <Key>
+            <PropertyRef Name="JobId" />
+            <PropertyRef Name="applicantEmail" />
+          </Key>
+          <Property Name="JobId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="applicantEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="UserDetail" Relationship="Self.FK__JobApplic__appli__30F848ED" FromRole="JobApplicant" ToRole="UserDetail" />
+          <NavigationProperty Name="JobPost" Relationship="Self.FK__JobApplic__JobId__300424B4" FromRole="JobApplicant" ToRole="JobPost" />
+        </EntityType>
+        <EntityType Name="JobPost">
+          <Key>
+            <PropertyRef Name="JobId" />
+          </Key>
+          <Property Name="JobId" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="RecruiterEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="JobTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="JobLocation" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="JobSalary" Type="Double" />
+          <Property Name="JobDescription" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="JobApplicants" Relationship="Self.FK__JobApplic__JobId__300424B4" FromRole="JobPost" ToRole="JobApplicant" />
+          <NavigationProperty Name="UserDetail" Relationship="Self.FK__JobPost__Recruit__2D27B809" FromRole="JobPost" ToRole="UserDetail" />
+        </EntityType>
+        <EntityType Name="Recruiter">
+          <Key>
+            <PropertyRef Name="RecruiterEmail" />
+          </Key>
+          <Property Name="RecruiterEmail" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CompanyName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="CompanyWebsiteUrl" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Designation" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="UserDetail" Relationship="Self.FK__Recruiter__Recru__2A4B4B5E" FromRole="Recruiter" ToRole="UserDetail" />
+        </EntityType>
+        <EntityType Name="UserDetail">
+          <Key>
+            <PropertyRef Name="Email" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Contact" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Role" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Applicant" Relationship="Self.FK__Applicant__Appli__276EDEB3" FromRole="UserDetail" ToRole="Applicant" />
+          <NavigationProperty Name="JobApplicants" Relationship="Self.FK__JobApplic__appli__30F848ED" FromRole="UserDetail" ToRole="JobApplicant" />
+          <NavigationProperty Name="JobPosts" Relationship="Self.FK__JobPost__Recruit__2D27B809" FromRole="UserDetail" ToRole="JobPost" />
+          <NavigationProperty Name="Recruiter" Relationship="Self.FK__Recruiter__Recru__2A4B4B5E" FromRole="UserDetail" ToRole="Recruiter" />
+        </EntityType>
+        <Association Name="FK__Applicant__Appli__276EDEB3">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="1" />
+          <End Role="Applicant" Type="Self.Applicant" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="Applicant">
+              <PropertyRef Name="ApplicantEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__JobApplic__appli__30F848ED">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="1" />
+          <End Role="JobApplicant" Type="Self.JobApplicant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="JobApplicant">
+              <PropertyRef Name="applicantEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__JobApplic__JobId__300424B4">
+          <End Role="JobPost" Type="Self.JobPost" Multiplicity="1" />
+          <End Role="JobApplicant" Type="Self.JobApplicant" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="JobPost">
+              <PropertyRef Name="JobId" />
+            </Principal>
+            <Dependent Role="JobApplicant">
+              <PropertyRef Name="JobId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__JobPost__Recruit__2D27B809">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="0..1" />
+          <End Role="JobPost" Type="Self.JobPost" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="JobPost">
+              <PropertyRef Name="RecruiterEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Recruiter__Recru__2A4B4B5E">
+          <End Role="UserDetail" Type="Self.UserDetail" Multiplicity="1" />
+          <End Role="Recruiter" Type="Self.Recruiter" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="UserDetail">
+              <PropertyRef Name="Email" />
+            </Principal>
+            <Dependent Role="Recruiter">
+              <PropertyRef Name="RecruiterEmail" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="WorkScoutEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Applicants" EntityType="Self.Applicant" />
+          <EntitySet Name="JobApplicants" EntityType="Self.JobApplicant" />
+          <EntitySet Name="JobPosts" EntityType="Self.JobPost" />
+          <EntitySet Name="Recruiters" EntityType="Self.Recruiter" />
+          <EntitySet Name="UserDetails" EntityType="Self.UserDetail" />
+          <AssociationSet Name="FK__Applicant__Appli__276EDEB3" Association="Self.FK__Applicant__Appli__276EDEB3">
+            <End Role="UserDetail" EntitySet="UserDetails" />
+            <End Role="Applicant" EntitySet="Applicants" />
+          </AssociationSet>
+          <AssociationSet Name="FK__JobApplic__appli__30F848ED" Association="Self.FK__JobApplic__appli__30F848ED">
+            <End Role="UserDetail" EntitySet="UserDetails" />
+            <End Role="JobApplicant" EntitySet="JobApplicants" />
+          </AssociationSet>
+          <AssociationSet Name="FK__JobApplic__JobId__300424B4" Association="Self.FK__JobApplic__JobId__300424B4">
+            <End Role="JobPost" EntitySet="JobPosts" />
+            <End Role="JobApplicant" EntitySet="JobApplicants" />
+          </AssociationSet>
+          <AssociationSet Name="FK__JobPost__Recruit__2D27B809" Association="Self.FK__JobPost__Recruit__2D27B809">
+            <End Role="UserDetail" EntitySet="UserDetails" />
+            <End Role="JobPost" EntitySet="JobPosts" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Recruiter__Recru__2A4B4B5E" Association="Self.FK__Recruiter__Recru__2A4B4B5E">
+            <End Role="UserDetail" EntitySet="UserDetails" />
+            <End Role="Recruiter" EntitySet="Recruiters" />
+          </AssociationSet>
+          <FunctionImport Name="usp_applicantDetailsByEmail" ReturnType="Collection(WorkScoutModel.usp_applicantDetailsByEmail_Result)">
+            <Parameter Name="email" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="usp_jobsAppliedByEmail" ReturnType="Collection(WorkScoutModel.usp_jobsAppliedByEmail_Result)">
+            <Parameter Name="email" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="usp_applicantDetailsByEmail_Result">
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Email" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="Contact" Nullable="false" MaxLength="10" />
+          <Property Type="String" Name="collegeName" Nullable="false" MaxLength="100" />
+          <Property Type="DateTime" Name="courseCompletion" Nullable="false" />
+          <Property Type="String" Name="resumeUrl" Nullable="false" MaxLength="50" />
+        </ComplexType>
+        <ComplexType Name="usp_jobsAppliedByEmail_Result">
+          <Property Type="String" Name="JobId" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="JobTitle" Nullable="false" MaxLength="50" />
+          <Property Type="String" Name="JobLocation" Nullable="false" MaxLength="50" />
+          <Property Type="Double" Name="JobSalary" Nullable="true" />
+          <Property Type="String" Name="JobDescription" Nullable="false" MaxLength="500" />
+          <Property Type="String" Name="CStatus" Nullable="false" MaxLength="50" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="WorkScoutModelStoreContainer" CdmEntityContainer="WorkScoutEntities">
+          <EntitySetMapping Name="Applicants">
+            <EntityTypeMapping TypeName="WorkScoutModel.Applicant">
+              <MappingFragment StoreEntitySet="Applicant">
+                <ScalarProperty Name="ApplicantEmail" ColumnName="ApplicantEmail" />
+                <ScalarProperty Name="CollegeName" ColumnName="CollegeName" />
+                <ScalarProperty Name="CourseCompletion" ColumnName="CourseCompletion" />
+                <ScalarProperty Name="ResumeUrl" ColumnName="ResumeUrl" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="JobApplicants">
+            <EntityTypeMapping TypeName="WorkScoutModel.JobApplicant">
+              <MappingFragment StoreEntitySet="JobApplicant">
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="applicantEmail" ColumnName="applicantEmail" />
+                <ScalarProperty Name="CStatus" ColumnName="CStatus" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="JobPosts">
+            <EntityTypeMapping TypeName="WorkScoutModel.JobPost">
+              <MappingFragment StoreEntitySet="JobPost">
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="RecruiterEmail" ColumnName="RecruiterEmail" />
+                <ScalarProperty Name="JobTitle" ColumnName="JobTitle" />
+                <ScalarProperty Name="JobLocation" ColumnName="JobLocation" />
+                <ScalarProperty Name="JobSalary" ColumnName="JobSalary" />
+                <ScalarProperty Name="JobDescription" ColumnName="JobDescription" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Recruiters">
+            <EntityTypeMapping TypeName="WorkScoutModel.Recruiter">
+              <MappingFragment StoreEntitySet="Recruiter">
+                <ScalarProperty Name="RecruiterEmail" ColumnName="RecruiterEmail" />
+                <ScalarProperty Name="CompanyName" ColumnName="CompanyName" />
+                <ScalarProperty Name="CompanyWebsiteUrl" ColumnName="CompanyWebsiteUrl" />
+                <ScalarProperty Name="Designation" ColumnName="Designation" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserDetails">
+            <EntityTypeMapping TypeName="WorkScoutModel.UserDetail">
+              <MappingFragment StoreEntitySet="UserDetail">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Contact" ColumnName="Contact" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Role" ColumnName="Role" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="usp_applicantDetailsByEmail" FunctionName="WorkScoutModel.Store.usp_applicantDetailsByEmail">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WorkScoutModel.usp_applicantDetailsByEmail_Result">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="Contact" ColumnName="Contact" />
+                <ScalarProperty Name="collegeName" ColumnName="collegeName" />
+                <ScalarProperty Name="courseCompletion" ColumnName="courseCompletion" />
+                <ScalarProperty Name="resumeUrl" ColumnName="resumeUrl" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="usp_jobsAppliedByEmail" FunctionName="WorkScoutModel.Store.usp_jobsAppliedByEmail">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="WorkScoutModel.usp_jobsAppliedByEmail_Result">
+                <ScalarProperty Name="JobId" ColumnName="JobId" />
+                <ScalarProperty Name="JobTitle" ColumnName="JobTitle" />
+                <ScalarProperty Name="JobLocation" ColumnName="JobLocation" />
+                <ScalarProperty Name="JobSalary" ColumnName="JobSalary" />
+                <ScalarProperty Name="JobDescription" ColumnName="JobDescription" />
+                <ScalarProperty Name="CStatus" ColumnName="CStatus" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

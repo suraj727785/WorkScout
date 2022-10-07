@@ -1,0 +1,42 @@
+﻿@model WorkScout.Models.JobApplicant
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>JobApplicant</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.CStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UserDetail.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UserDetail.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.JobPost.RecruiterEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.JobPost.RecruiterEmail)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
